@@ -12,4 +12,3 @@ public class HomeController {
         return "TechOS no ar!";
     }
 }
-
