@@ -30,6 +30,7 @@
 <!-- AVISOS (só aparecem se o Controller mandar "mensagem" ou "erro") -->
 <div class="container-xl pt-3">
   <div class="alert alert-success mb-0" th:if="${mensagem != null}" th:text="${mensagem}">Salvo com sucesso.</div>
+  <div class="alert alert-success mb-0" th:if="${update != null}" th:text="${update}">Atualizado com sucesso.</div>
   <div class="alert alert-danger mb-0" th:if="${erro != null}" th:text="${erro}">Algo deu errado.</div>
 </div>
 
@@ -45,6 +46,7 @@
       <input type="hidden" th:field="*{id}">
 
       <div class="mb-3">
+        <input type="hidden" th:field="*{id}">
         <label class="form-label" for="nome">Nome</label>
         <input type="text" id="nome" class="form-control" th:field="*{nome}" th:errorclass="is-invalid" autofocus>
         <div class="invalid-feedback" th:errors="*{nome}">Informe o nome.</div>
