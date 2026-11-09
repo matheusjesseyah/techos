@@ -1,5 +1,7 @@
 package br.com.bugnacio.techos.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.bugnacio.techos.model.Cliente;
@@ -8,5 +10,12 @@ import br.com.bugnacio.techos.model.Cliente;
 //A interface JpaRepository já possui métodos prontos para salvar, buscar, atualizar, e deletar registros no banco de dados
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
+
+    boolean exisistsByTelefone(String telefone);
+    
+    boolean existsByTelefoneAndIdNot(String telefone, Long id);
+
+    List<Cliente> findByNameContainingIgnoreCase(String nome);
+
 
 }

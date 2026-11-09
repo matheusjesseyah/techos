@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
  
 // @Entity: essa classe representa uma tabela no banco de dados.
 @Entity
@@ -15,8 +18,15 @@ public class Cliente {
 private Long id;
  
 // Cada atributo vira uma coluna na tabela. O nome da coluna e o mesmo do atributo.
+@NotBlank(message = "O nome do cliente é obrigatório!")
+@Size(min = 3, max = 100,
+    message = "O nome deve ter entre 3 e 100 caracteres!")
 private String nome;
+
+@NotBlank(message = "Informe o telefone do cliente!")
 private String telefone;
+
+@Email(message = "Digite um e-mail válido, contendo @!")
 private String email;
  
 // Construtor padrao (sem argumentos) necessario para o JPA.
