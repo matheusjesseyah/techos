@@ -1,15 +1,19 @@
 package br.com.bugnacio.techos.controller;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.bugnacio.techos.model.Cliente;
 import br.com.bugnacio.techos.repository.ClienteRepository;
+import jakarta.validation.Valid;
 
 
 // @Controller: bean do Spring, a recepcao dos pedidos de clientes.
@@ -32,12 +36,18 @@ public class ClienteController {
     // @GetMapping vazio = o proprio "/clientes".
     // Endereco completo: http://localhost:8080/clientes
     @GetMapping
-    public String listar(Model model) {
+    public String listar(@RequestParam(value = "busca", required = false) String busca, Model model) {
 
         // A tela clientes/lista espera uma lista chamada "clientes".
         // Ainda nao temos banco, entao mandamos uma lista VAZIA (List.of()).
         // A tela mostra o "estado vazio". Na aula 5 essa lista vem do banco.
-        model.addAttribute("clientes", repo.findAll());
+        if(busca != null && !busca.isBlank()){
+            model.addAttribute("clientes", repo.findByNameContainingIgnoreCase(busca));
+        } else {
+            model.addAttribute("clientes", repo.findAll(Sort.by("nome")));
+        }
+        
+        model.addAttribute("busca", busca);
 
         // SEM @ResponseBody: o texto devolvido e o nome da tela.
         // Abre: src/main/resources/templates/clientes/lista.html
@@ -51,22 +61,41 @@ public class ClienteController {
         return "clientes/form";
     }
     
+
     //create/salvar
     @PostMapping("/salvar")
-    public String salvar(Cliente cliente, RedirectAttributes redirect){
+    public String salvar(@Valid Cliente cliente, BindingResult result ,RedirectAttributes redirect){
 
-        boolean edicao = cliente.getId() != null;
+        boolean jaExiste;
         
 
+        if (cliente.getId()== null) {
+            jaExiste = repo.existsByTelefone(cliente.getTelefone());
+        } else {
+            jaExiste = repo.existsByTelefoneAndIdNot(cliente.getTelefone(), cliente.getId());
+        }
+
+        if (jaExiste){
+            result.rejectValue("telefone", "duplicado", "Já existe cliente com esse telefone.");
+        }
+
+        if(result.hasErrors()){
+            return "redirect:/clientes";
+        }
+
+        repo.save(cliente);
+        boolean edicao = cliente.getId() != null;
+       
+ 
         if (edicao) {
             redirect.addFlashAttribute("update", "Cliente editado com sucesso!");
         } else {
             redirect.addFlashAttribute("mensagem", "Cliente salvo com sucesso!");
         }
 
-        repo.save(cliente);
-        
         return "redirect:/clientes";
+        
+        
     }
 
     //Delete
