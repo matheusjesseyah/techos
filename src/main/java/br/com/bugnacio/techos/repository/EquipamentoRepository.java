@@ -15,7 +15,7 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
 
     List<Equipamento> findByModeloContainingIgnoreCase(String modelo);
 
-    List<Equipamento> findByClienteId(Long clienteId);
+    List<Equipamento> findByClienteId(Long cliente_id);
 
     List<Equipamento> findByTipo(TipoEquipamento tipo);
 

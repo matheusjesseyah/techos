@@ -47,7 +47,7 @@
       <div class="mb-3">
         <label class="form-label" for="cliente">Cliente</label>
         <!-- name="cliente.id": o Spring monta o Cliente só com o id -->
-        <select id="cliente" name="cliente.id" class="form-select" required>
+        <select id="cliente_id" name="cliente_id" class="form-select" required>
           <option value="">Escolha o cliente</option>
           <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"
                   th:selected="${equipamento.cliente != null and equipamento.cliente.id == c.id}">Maria Souza</option>
