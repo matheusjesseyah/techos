@@ -40,8 +40,9 @@ public class EquipamentoController {
             Model model) {
         if (busca != null && !busca.isBlank()) {
             model.addAttribute(
-                    "equipamentos",
-                    repo.findByModeloContainingIgnoreCase(busca));
+                "equipamentos",
+                repo.findByMarcaContainingIgnoreCaseOrModeloContainingIgnoreCase(
+                        busca, busca));
         } else {
             model.addAttribute(
                     "equipamentos",

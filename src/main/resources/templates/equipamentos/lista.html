@@ -43,6 +43,17 @@
     <a class="btn btn-primary" th:href="@{/equipamentos/novo}">Novo equipamento</a>
   </div>
 
+    <form class="row g-2 mb-3" method="get" th:action="@{/equipamentos}">
+    <div class="col-12 col-sm-8 col-md-5">
+      <input type="search" name="busca" class="form-control" placeholder="Buscar equipamento por marca ou modelo"
+             aria-label="Buscar equipamento por marca ou modelo" th:value="${busca}">
+    </div>
+    
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </div>
+  </form>
+
   <div class="panel" th:if="${equipamentos.isEmpty()}">
     <div class="empty">
       <p class="fw-semibold mb-1">Nenhum equipamento cadastrado</p>
