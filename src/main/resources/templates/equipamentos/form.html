@@ -47,11 +47,19 @@
       <div class="mb-3">
         <label class="form-label" for="cliente">Cliente</label>
         <!-- name="cliente.id": o Spring monta o Cliente só com o id -->
-        <select id="cliente_id" name="cliente_id" class="form-select" required>
+        <select id="cliente_id"
+            name="cliente_id"
+            class="form-select"
+            th:classappend="${#fields.hasErrors('cliente')} ? 'is-invalid' : ''"
+            required>
           <option value="">Escolha o cliente</option>
           <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"
                   th:selected="${equipamento.cliente != null and equipamento.cliente.id == c.id}">Maria Souza</option>
         </select>
+        <div class="invalid-feedback"
+         th:if="${#fields.hasErrors('cliente')}"
+         th:errors="*{cliente}">
+    </div>
       </div>
 
       <div class="row g-3 mb-3">
@@ -76,7 +84,8 @@
         </div>
         <div class="col-12 col-sm-6">
           <label class="form-label" for="numeroSerie">Número de série</label>
-          <input type="text" id="numeroSerie" class="form-control" th:field="*{numeroSerie}">
+          <input type="text" id="numeroSerie" class="form-control" th:field="*{numeroSerie}" th:errorclass="is-invalid">
+          <div class="invalid-feedback" th:errors="*{numeroSerie}">Informe um um número de série válido.</div>
         </div>
       </div>
 

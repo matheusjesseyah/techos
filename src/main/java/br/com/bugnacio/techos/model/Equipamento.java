@@ -31,6 +31,7 @@ public class Equipamento {
     private String modelo;
 
     // Opcional (sem validacao).
+    @NotBlank(message = "Informe o número da série")
     private String numeroSerie;
 
     // @ManyToOne: MUITOS equipamentos para UM cliente.

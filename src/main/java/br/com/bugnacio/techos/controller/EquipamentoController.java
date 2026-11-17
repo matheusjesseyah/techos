@@ -40,9 +40,9 @@ public class EquipamentoController {
             Model model) {
         if (busca != null && !busca.isBlank()) {
             model.addAttribute(
-                "equipamentos",
-                repo.findByMarcaContainingIgnoreCaseOrModeloContainingIgnoreCase(
-                        busca, busca));
+                    "equipamentos",
+                    repo.findByMarcaContainingIgnoreCaseOrModeloContainingIgnoreCase(
+                            busca, busca));
         } else {
             model.addAttribute(
                     "equipamentos",
@@ -66,15 +66,50 @@ public class EquipamentoController {
     public String salvar(
             @Valid Equipamento equipamento,
             BindingResult result,
-            @RequestParam("cliente_id") Long cliente_id,
+            @RequestParam(value = "cliente_id", required = false) Long cliente_id,
             Model model,
             RedirectAttributes redirect) {
 
-        Cliente cliente = clienteRepo.findById(cliente_id)
-                .orElseThrow();
+        boolean novoCadastro = equipamento.getId() == null;
 
-        equipamento.setCliente(cliente);
+        // 1. Validar se um cliente foi selecionado
+        if (cliente_id == null) {
+            result.rejectValue("cliente", "cliente.obrigatorio",
+                    "Selecione um cliente.");
+        } else {
+            Cliente cliente = clienteRepo.findById(cliente_id).orElse(null);
 
+            if (cliente == null) {
+                result.rejectValue("cliente", "cliente.invalido",
+                        "Cliente não encontrado.");
+            } else {
+                equipamento.setCliente(cliente);
+            }
+        }
+
+        // 2. Verificar número de série duplicado
+        if (equipamento.getNumeroSerie() != null
+                && !equipamento.getNumeroSerie().isBlank()) {
+
+            boolean jaExiste;
+
+            if (novoCadastro) {
+                jaExiste = repo.existsByNumeroSerie(equipamento.getNumeroSerie());
+            } else {
+                jaExiste = repo.existsByNumeroSerieAndIdNot(
+                        equipamento.getNumeroSerie(),
+                        equipamento.getId());
+            }
+
+            if (jaExiste) {
+                result.rejectValue(
+                        "numeroSerie",
+                        "duplicado",
+                        "Já existe um equipamento com esse número de série.");
+            }
+        }
+
+        // 3. Se houver erros, retornar ao formulário
         if (result.hasErrors()) {
             model.addAttribute("clientes", clienteRepo.findAll());
             model.addAttribute("tipos", TipoEquipamento.values());
@@ -82,16 +117,17 @@ public class EquipamentoController {
             return "equipamentos/form";
         }
 
-        boolean edicao = equipamento.getId() != null;
-
+        // 4. Salvar equipamento
         repo.save(equipamento);
 
-        if (edicao) {
+        if (novoCadastro) {
             redirect.addFlashAttribute(
-                    "update", "Equipamento atualizado com sucesso!");
+                    "mensagem",
+                    "Equipamento cadastrado com sucesso!");
         } else {
             redirect.addFlashAttribute(
-                    "mensagem", "Equipamento cadastrado com sucesso!");
+                    "update",
+                    "Equipamento atualizado com sucesso!");
         }
 
         return "redirect:/equipamentos";
