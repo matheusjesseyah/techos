@@ -22,4 +22,6 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
     List<Equipamento> findByMarcaContainingIgnoreCaseOrModeloContainingIgnoreCase(
         String marca, String modelo);
 
+    boolean existsByClienteId(Long id);
+
 }
